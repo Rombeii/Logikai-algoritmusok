@@ -10,7 +10,6 @@ import org.sat4j.specs.*;
 import java.util.AbstractSet;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.stream.Collectors;
 
 //https://en.wikipedia.org/wiki/Zebra_Puzzle
 public class ZebraPuzzle {
@@ -81,40 +80,40 @@ public class ZebraPuzzle {
         //15. The Norwegian lives next to the blue house.
         solver.addAllClauses(neighbour(Attribute.BLUE, Attribute.NORWEGIAN, containter));
 
-        //Attributes are exclusive, there can be only 1 red house, etc.
         Object[] combinations = Sets.combinations(ImmutableSet.of(1, 2, 3, 4, 5), 2).toArray();
 
-        for (Attribute nationality : Attribute.nationalities) {
-            solver.addAllClauses(attributeIsExclusive(nationality, containter, combinations));
-        }
-        for (Attribute color : Attribute.colors) {
-            solver.addAllClauses(attributeIsExclusive(color, containter, combinations));
-        }
-        for (Attribute drink : Attribute.drinks) {
-            solver.addAllClauses(attributeIsExclusive(drink, containter, combinations));
-        }
-        for (Attribute pet : Attribute.pets) {
-            solver.addAllClauses(attributeIsExclusive(pet, containter, combinations));
-        }
-        for (Attribute a : Attribute.smokes) {
-            solver.addAllClauses(attributeIsExclusive(a, containter, combinations));
-        }
-
-        for (int houseNumber = 1; houseNumber < 6; houseNumber++) {
-            solver.addAllClauses(attributeIsExclusive(Attribute.nationalities, containter, combinations, houseNumber));
-            solver.addAllClauses(attributeIsExclusive(Attribute.colors, containter, combinations, houseNumber));
-            solver.addAllClauses(attributeIsExclusive(Attribute.drinks, containter, combinations, houseNumber));
-            solver.addAllClauses(attributeIsExclusive(Attribute.pets, containter, combinations, houseNumber));
-            solver.addAllClauses(attributeIsExclusive(Attribute.smokes, containter, combinations, houseNumber));
-        }
-
+        //Each attribute has to appear at least once
         solver.addAllClauses(atLeastOne(Attribute.nationalities, containter));
         solver.addAllClauses(atLeastOne(Attribute.colors, containter));
         solver.addAllClauses(atLeastOne(Attribute.drinks, containter));
         solver.addAllClauses(atLeastOne(Attribute.pets, containter));
         solver.addAllClauses(atLeastOne(Attribute.smokes, containter));
 
+        //Ex.: If you test two houses if they are RED, at least one of them needs to be false
+        for (Attribute nationality : Attribute.nationalities) {
+            solver.addAllClauses(maxOneAttributeEach(nationality, containter, combinations));
+        }
+        for (Attribute color : Attribute.colors) {
+            solver.addAllClauses(maxOneAttributeEach(color, containter, combinations));
+        }
+        for (Attribute drink : Attribute.drinks) {
+            solver.addAllClauses(maxOneAttributeEach(drink, containter, combinations));
+        }
+        for (Attribute pet : Attribute.pets) {
+            solver.addAllClauses(maxOneAttributeEach(pet, containter, combinations));
+        }
+        for (Attribute a : Attribute.smokes) {
+            solver.addAllClauses(maxOneAttributeEach(a, containter, combinations));
+        }
 
+        //Ex.: If you test a house if it is RED or GREEN at least one of them needs to be false
+        for (int houseNumber = 1; houseNumber < 6; houseNumber++) {
+            solver.addAllClauses(noConflictingAttributes(Attribute.nationalities, containter, combinations, houseNumber));
+            solver.addAllClauses(noConflictingAttributes(Attribute.colors, containter, combinations, houseNumber));
+            solver.addAllClauses(noConflictingAttributes(Attribute.drinks, containter, combinations, houseNumber));
+            solver.addAllClauses(noConflictingAttributes(Attribute.pets, containter, combinations, houseNumber));
+            solver.addAllClauses(noConflictingAttributes(Attribute.smokes, containter, combinations, houseNumber));
+        }
 
         System.out.println(solver.isSatisfiable());
         Arrays.stream(solver.model()).filter(a -> a > 0).forEach(x -> System.out.println(containter.indexToString(x)));
@@ -155,7 +154,7 @@ public class ZebraPuzzle {
         return clauses;
     }
 
-    private static IVec attributeIsExclusive(Attribute attribute, Containter containter, Object[] combinations) {
+    private static IVec maxOneAttributeEach(Attribute attribute, Containter containter, Object[] combinations) {
         IVec clauses = new Vec();
         for (Object combination : combinations) {
             VecInt clause = new VecInt();
@@ -169,8 +168,8 @@ public class ZebraPuzzle {
     }
 
 
-    private static IVec attributeIsExclusive(EnumSet<Attribute> attributes, Containter containter,
-                                             Object[] combinations, int houseNumber) {
+    private static IVec noConflictingAttributes(EnumSet<Attribute> attributes, Containter containter,
+                                                Object[] combinations, int houseNumber) {
         IVec clauses = new Vec();
         for (Object combination : combinations) {
             VecInt clause = new VecInt();
