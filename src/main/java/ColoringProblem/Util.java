@@ -1,7 +1,8 @@
 package ColoringProblem;
 
 import com.github.javabdd.BDDFactory;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class Util {
 
         edges.add(new GraphEdge(s3, s4));
 
-        return new Pair<>(nodes, edges);
+        return new ImmutablePair<>(nodes, edges);
     }
 
     //https://hu.wikipedia.org/wiki/Gráfok_színezése#/media/Fájl:Graph_with_all_three-colourings_2.svg
@@ -61,6 +62,6 @@ public class Util {
 
         edges.add(new GraphEdge(s2, s3));
 
-        return new Pair<>(nodes, edges);
+        return new ImmutablePair<>(nodes, edges);
     }
 }

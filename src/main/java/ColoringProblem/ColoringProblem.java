@@ -2,7 +2,7 @@ package ColoringProblem;
 
 import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 

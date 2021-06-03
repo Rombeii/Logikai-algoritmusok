@@ -1,13 +1,14 @@
 package ColoringProblem;
 
 import com.github.javabdd.BDD;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class GraphEdge {
     Pair<GraphNode, GraphNode> nodes;
 
     public GraphEdge(GraphNode n1, GraphNode n2) {
-        nodes = new Pair<>(n1, n2);
+        nodes = new ImmutablePair<>(n1, n2);
     }
 
     public GraphNode getLeft() {
